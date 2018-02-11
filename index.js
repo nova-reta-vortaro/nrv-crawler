@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const { DOMParser } = require('xmldom')
 const request = require('request-promise-native')
 const fs = require('fs-extra')
