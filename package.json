@@ -1,0 +1,16 @@
+{
+  "name": "nrv-crawler",
+  "version": "0.1.0",
+  "description": "Script to fetch data from the old ReVo and output it as JSON for the new one",
+  "main": "index.js",
+  "repository": "https://github.com/nova-reta-vortaro/nrv-crawler.git",
+  "author": "Baptiste Gelez <baptiste@gelez.xyz>",
+  "license": "GPL-3.0",
+  "private": false,
+  "dependencies": {
+    "fs-extra": "^5.0.0",
+    "request": "^2.83.0",
+    "request-promise-native": "^1.0.5",
+    "xmldom": "^0.1.27"
+  }
+}
