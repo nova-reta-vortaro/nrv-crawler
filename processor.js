@@ -1,3 +1,5 @@
+const entities = require('entities')
+
 const ELEMENT_NODE = 1
 const TEXT_NODE = 3
 
@@ -56,25 +58,9 @@ const getFirstRec = (node, names) => _getFirstRec(node, names.reverse())
 
 const findRadical = (vortaro) => getText(getFirstRec(vortaro, [ 'art', 'kap', 'rad' ]))
 
-const entities = [
-  [ '&ccirc;', 'ĉ' ],
-  [ '&Ccirc;', 'Ĉ' ],
-  [ '&gcirc;', 'ĝ' ],
-  [ '&Gcirc;', 'Ĝ' ],
-  [ '&hcirc;', 'ĥ' ],
-  [ '&Hcirc;', 'Ĥ' ],
-  [ '&jcirc;', 'ĵ' ],
-  [ '&Jcirc;', 'Ĵ' ],
-  [ '&scirc;', 'ŝ' ],
-  [ '&Scirc;', 'Ŝ' ],
-  [ '&ubreve;', 'ŭ' ],
-  [ '&Ubreve;', 'Ŭ' ],
-]
-const espEntities = (text) => entities.reduce((txt, ent) => txt.replace(ent[0], ent[1]), text)
-
 const startPunct = /^\s*[:,]*\s*/g
 const endPunct = /\s*[:,]*\s*$/g
-const clean = (text) => espEntities(text.split('\n').map(s => s.trim()).join(' ').replace(endPunct, '').replace(startPunct, ''))
+const clean = (text) => entities.decodeHTML(text.split('\n').map(s => s.trim()).join(' ').replace(endPunct, '').replace(startPunct, ''))
 
 const wordSep = /[ ,.!?;:"']/
 const findWords = (text) => { console.log(text); return text.split(wordSep).filter(x => x.length) }
@@ -86,7 +72,6 @@ function processWords (vortaro, radical) {
     const word = clean(getText(title))
     console.log('Found: ' + word)
 
-    const translations = {}
     const related = []
     let others = []
 
@@ -103,6 +88,16 @@ function processWords (vortaro, radical) {
         definition,
         examples
       }
+    })
+
+    const translations = {}
+    arr(drv.getElementsByTagName('trd')).forEach(trd => {
+      translations[trd.getAttribute('lng')] = [ clean(getText(trd)) ]
+    })
+    arr(drv.getElementsByTagName('trdgrp')).forEach(trdgrp => {
+      translations[trdgrp.getAttribute('lng')] = arr(trdgrp.getElementsByTagName('trd')).map(trd => {
+        return clean(getText(trd))
+      })
     })
 
     return {
