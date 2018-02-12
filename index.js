@@ -69,6 +69,7 @@ async function download (page) {
       queue.push(radical)
     } else {
       console.error(`Error: unable to fetch ${page}`)
+      console.error(err.message)
     }
   }
 }

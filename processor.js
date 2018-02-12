@@ -54,6 +54,19 @@ function _getFirstRec (node, names) {
   }
 }
 
+function findRec (node, tag) {
+  let res = []
+  if (node.nodeType === ELEMENT_NODE) {
+    for (const child of arr(node)) {
+      if (child.tagName === tag) {
+        res.push(child)
+      }
+      res = res.concat(findRec(child, tag))
+    }
+  }
+  return res
+}
+
 const getFirstRec = (node, names) => _getFirstRec(node, names.reverse())
 
 const findRadical = (vortaro) => getText(getFirstRec(vortaro, [ 'art', 'kap', 'rad' ]))
@@ -99,12 +112,17 @@ function processWords (vortaro, radical) {
       })
     })
 
+    const bibliography = findRec(drv, 'bib')
+      .map(bib => clean(getText(bib)))
+      .reduce((sum, elt) => sum.includes(elt) ? sum : sum.concat([ elt ]), [])
+
     return {
       word,
       meanings,
       translations,
       related,
-      others
+      others,
+      bibliography
     }
   })
 }
