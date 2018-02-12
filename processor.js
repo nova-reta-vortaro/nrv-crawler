@@ -63,7 +63,7 @@ const endPunct = /\s*[:,]*\s*$/g
 const clean = (text) => entities.decodeHTML(text.split('\n').map(s => s.trim()).join(' ').replace(endPunct, '').replace(startPunct, ''))
 
 const wordSep = /[ ,.!?;:"']/
-const findWords = (text) => { console.log(text); return text.split(wordSep).filter(x => x.length) }
+const findWords = (text) => text.split(wordSep).filter(x => x.length)
 
 function processWords (vortaro, radical) {
   return arr(getFirst(vortaro, 'art').getElementsByTagName('drv')).map(drv => {
@@ -76,7 +76,6 @@ function processWords (vortaro, radical) {
     let others = []
 
     const meanings = arr(drv.getElementsByTagName('snc')).map(meaning => {
-      console.log('meaingin' + meaning)
       const difNode = getFirst(meaning, 'dif')
       replaceTld(difNode, radical)
       const definition = clean(getText(difNode))
@@ -114,9 +113,7 @@ function processVortaro(dom) {
   const vortaro = getFirstRec(dom, [ 'vortaro' ])
 
   const radical = findRadical(vortaro)
-  console.log(`RAD: ${radical}`)
   const words = processWords(vortaro, radical)
-  console.log(require('util').inspect(words, false, 5))
   const result = {
     others: words.reduce((sum, w) => sum.concat(w.others), []),
     words: words.map(w => {
