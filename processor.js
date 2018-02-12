@@ -31,7 +31,12 @@ function getText (node, recursive = false) {
     if (child.nodeType === TEXT_NODE) {
       res += child.data
     } else if (recursive) {
-      res += getText(child, recursive)
+      if (child.tagName === 'ref' && child.getAttribute('cel') !== null) {
+        const txt = getText(child, recursive)
+        res += `![${txt}](/vorto/${txt.toLowerCase()})`
+      } else {
+        res += getText(child, recursive)
+      }
     }
   }
   return res === '' ? undefined : res
@@ -90,7 +95,7 @@ function processWords (vortaro, radical) {
     const meanings = arr(drv.getElementsByTagName('snc')).map(meaning => {
       const difNode = getFirst(meaning, 'dif')
       replaceTld(difNode, radical)
-      const definition = clean(getText(difNode))
+      const definition = clean(getText(difNode, true))
       const examples = arr(difNode.getElementsByTagName('ekz')).map(ekz => clean(getText(ekz)))
       const usage = arr(meaning.getElementsByTagName('uzo')).map(uzo => getText(uzo)).join(', ')
       others = others.concat(findWords(definition)).concat(examples.reduce((sum, elt) => sum.concat(findWords(elt)), []))
