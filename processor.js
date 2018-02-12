@@ -34,7 +34,7 @@ function getText (node, recursive = false) {
       if (child.tagName === 'ref') {
         if (child.getAttribute('cel') !== null) {
           const txt = getText(child, recursive)
-          res += `![${txt}](/vorto/${txt.toLowerCase()})`
+          res += `[${txt}](/vorto/${txt.toLowerCase()})`
         }
       } else {
         res += getText(child, recursive)
