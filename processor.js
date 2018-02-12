@@ -85,7 +85,6 @@ function processWords (vortaro, radical) {
     const word = clean(getText(title))
     console.log('Found: ' + word)
 
-    const related = []
     let others = []
 
     const meanings = arr(drv.getElementsByTagName('snc')).map(meaning => {
@@ -112,6 +111,20 @@ function processWords (vortaro, radical) {
       })
     })
 
+    const related = []
+    arr(drv.getElementsByTagName('ref')).forEach(ref => {
+      if (ref.getAttribute('tip') === 'vid') {
+        related.push(clean(getText(ref)))
+      }
+    })
+    arr(drv.getElementsByTagName('refgrp')).forEach(refgrp => {
+      if (refgrp.getAttribute('tip') === 'vid') {
+        arr(refgrp.getElementsByTagName('ref')).forEach(ref => {
+          related.push(clean(getText(ref)))
+        })
+      }
+    })
+
     const bibliography = findRec(drv, 'bib')
       .map(bib => clean(getText(bib)))
       .reduce((sum, elt) => sum.includes(elt) ? sum : sum.concat([ elt ]), [])
@@ -136,6 +149,8 @@ function processVortaro(dom) {
     others: words.reduce((sum, w) => sum.concat(w.others), []),
     words: words.map(w => {
       delete w.others
+      // adding other words that were found to the related ones
+      w.related = words.filter(x => w !== x).map(x => x.word).concat(w.related)
       return w
     })
   }
